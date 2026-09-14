@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Food — Delicious Food, Happy Mood</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1410;
+    --char:#241c17;
+    --cream:#fff6ea;
+    --red:#d62828;
+    --red-dark:#a31d1d;
+    --gold:#f6a821;
+    --gold-light:#ffd166;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Poppins',sans-serif;
+    background:var(--ink);
+    color:var(--cream);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{
+    font-family:'Anton',sans-serif;
+    font-weight:400;
+    letter-spacing:0.5px;
+  }
+
+  /* NAV */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 6%;
+    background:rgba(20,15,11,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .nav .brand{display:flex;align-items:center;gap:10px;}
+  .nav .brand img{height:46px;width:46px;object-fit:contain;border-radius:50%;}
+  .nav .brand span{font-family:'Anton',sans-serif;font-size:22px;color:var(--gold-light);}
+  .nav ul{display:flex;gap:34px;list-style:none;}
+  .nav ul li a{
+    color:var(--cream);text-decoration:none;font-weight:600;font-size:15px;
+    opacity:0.85;transition:opacity .2s, color .2s;
+  }
+  .nav ul li a:hover{opacity:1;color:var(--gold-light);}
+  .nav .order-btn{
+    background:var(--red);color:#fff;border:none;padding:11px 22px;border-radius:6px;
+    font-weight:700;font-size:14px;text-decoration:none;letter-spacing:0.3px;
+    box-shadow:0 6px 16px rgba(214,40,40,0.35);
+    transition:transform .15s, background .2s;
+  }
+  .nav .order-btn:hover{background:var(--red-dark);transform:translateY(-2px);}
+  .nav-toggle{display:none;background:none;border:none;color:var(--cream);font-size:26px;cursor:pointer;}
+
+  /* HERO */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;align-items:center;
+    padding:120px 6% 80px;
+    background:
+      radial-gradient(ellipse at 75% 30%, rgba(214,40,40,0.18), transparent 55%),
+      linear-gradient(180deg, var(--ink) 0%, #120d0a 100%);
+  }
+  .hero::before{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      repeating-linear-gradient(115deg, rgba(246,168,33,0.035) 0 2px, transparent 2px 42px);
+    pointer-events:none;
+  }
+  .hero-grid{
+    position:relative;z-index:2;
+    display:grid;grid-template-columns:1.05fr 0.95fr;gap:40px;align-items:center;
+    width:100%;max-width:1280px;margin:0 auto;
+  }
+  .hero-copy .eyebrow-line{
+    display:flex;align-items:center;gap:10px;margin-bottom:18px;
+  }
+  .hero-copy .eyebrow-line .dash{width:34px;height:3px;background:var(--gold);border-radius:2px;}
+  .hero-copy .eyebrow-line span{color:var(--gold-light);font-weight:600;font-size:14px;}
+  .hero-copy h1{
+    font-size:clamp(42px,6vw,74px);
+    line-height:1.02;
+    color:var(--cream);
+  }
+  .hero-copy h1 .accent{color:var(--gold);display:block;}
+  .hero-copy p{
+    margin-top:22px;max-width:460px;
+    font-size:17px;line-height:1.7;color:rgba(255,246,234,0.75);
+  }
+  .hero-cta{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--red);color:#fff;padding:16px 30px;border-radius:8px;
+    font-weight:700;text-decoration:none;font-size:15.5px;letter-spacing:.2px;
+    box-shadow:0 10px 26px rgba(214,40,40,0.4);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(214,40,40,0.5);}
+  .btn-secondary{
+    border:1.5px solid rgba(255,246,234,0.35);color:var(--cream);padding:16px 28px;border-radius:8px;
+    font-weight:600;text-decoration:none;font-size:15.5px;
+    transition:border-color .2s, background .2s;
+  }
+  .btn-secondary:hover{border-color:var(--gold);background:rgba(246,168,33,0.08);}
+
+  .hero-visual{position:relative;display:flex;justify-content:center;align-items:center;}
+  .hero-visual .plate{
+    position:relative;width:100%;max-width:480px;border-radius:20px;overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,0.5);
+    transform:rotate(1.5deg);
+    aspect-ratio:1600/533;
+  }
+  .hero-visual .plate img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+    opacity:0;transition:opacity .9s ease;
+  }
+  .hero-visual .plate img.active{opacity:1;}
+  .hero-visual .badge{
+    position:absolute;top:-18px;right:-18px;z-index:3;
+    background:var(--gold);color:var(--ink);
+    width:96px;height:96px;border-radius:50%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:'Anton',sans-serif;font-size:13px;line-height:1.15;text-align:center;
+    box-shadow:0 10px 24px rgba(0,0,0,0.35);
+    transform:rotate(8deg);
+  }
+  .hero-visual .badge b{font-size:20px;}
+  .hero-visual .dots{
+    position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+    display:flex;gap:8px;z-index:3;
+  }
+  .hero-visual .dots span{
+    width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.4);
+    transition:background .3s, width .3s;
+  }
+  .hero-visual .dots span.active{background:var(--gold);width:22px;border-radius:5px;}
+
+  /* HIGHLIGHT STRIP */
+  .highlights{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    max-width:1180px;margin:0 auto;padding:0 6% 90px;
+    gap:0;position:relative;z-index:2;
+  }
+  .highlight-item{
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:22px 14px;border-left:1px solid rgba(255,246,234,0.08);
+  }
+  .highlight-item:first-child{border-left:none;}
+  .highlight-item .icon{
+    width:52px;height:52px;border-radius:50%;
+    background:rgba(246,168,33,0.1);border:1.5px solid rgba(246,168,33,0.35);
+    display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+    font-size:22px;color:var(--gold-light);
+  }
+  .highlight-item h3{font-family:'Poppins';font-weight:700;font-size:15px;color:var(--cream);}
+  .highlight-item p{font-size:13px;color:rgba(255,246,234,0.55);margin-top:4px;}
+
+  /* MENU TEASER */
+  .teaser{
+    background:var(--char);
+    padding:100px 6%;
+    position:relative;
+  }
+  .teaser-head{max-width:640px;margin:0 auto 50px;text-align:center;}
+  .teaser-head .eyebrow-line{justify-content:center;}
+  .teaser-head h2{font-size:clamp(32px,4.5vw,50px);color:var(--cream);}
+  .teaser-head p{margin-top:14px;color:rgba(255,246,234,0.6);font-size:16px;}
+  .teaser-grid{
+    max-width:1180px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(5,1fr);gap:18px;
+  }
+  .teaser-card{
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+    border:1px solid rgba(255,246,234,0.08);
+    border-radius:14px;padding:26px 18px;text-align:center;
+    transition:border-color .2s, transform .2s;
+  }
+  .teaser-card:hover{border-color:var(--gold);transform:translateY(-4px);}
+  .teaser-card .emoji{font-size:34px;margin-bottom:12px;display:block;}
+  .teaser-card h4{font-size:15px;color:var(--cream);font-weight:700;}
+
+  footer{
+    padding:26px 6%;text-align:center;
+    color:rgba(255,246,234,0.4);font-size:13px;
+    border-top:1px solid rgba(255,246,234,0.06);
+  }
+
+  @media (max-width:900px){
+    .nav ul{display:none;}
+    .hero-grid{grid-template-columns:1fr;text-align:center;}
+    .hero-copy p{margin:22px auto 0;}
+    .hero-cta{justify-content:center;}
+    .highlights{grid-template-columns:repeat(2,1fr);row-gap:20px;}
+    .highlight-item:nth-child(3){border-left:none;}
+    .teaser-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+  
+  
+  
+  
+
+  .menu-section{padding:90px 6% 110px;max-width:1180px;margin:0 auto;}
+  .menu-head{max-width:640px;margin:0 auto 50px;text-align:center;}
+  .eyebrow-line{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;}
+  .eyebrow-line .dash{width:34px;height:3px;background:var(--gold);border-radius:2px;}
+  .eyebrow-line span{color:var(--gold-light);font-weight:600;font-size:14px;}
+  .menu-head h2{font-size:clamp(32px,4.5vw,48px);}
+  .menu-head p{margin-top:14px;color:rgba(255,246,234,0.6);font-size:16px;}
+
+  /* CATEGORY CARDS */
+  .cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+  .cat-card{
+    cursor:pointer;background:var(--char2);border:1.5px solid rgba(255,246,234,0.08);
+    border-radius:14px;padding:0 0 16px;text-align:center;overflow:hidden;
+    transition:border-color .2s, transform .2s, background .2s;
+    position:relative;
+  }
+  .cat-card .cat-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;margin-bottom:14px;}
+  .cat-card h4{font-size:15px;font-weight:700;}
+  .cat-card:hover{transform:translateY(-4px);border-color:var(--gold);}
+  .cat-card.active{border-color:var(--red);box-shadow:0 0 0 2px var(--red) inset;}
+  .cat-card.active h4{color:var(--gold-light);}
+
+  /* ITEM PANEL */
+  .item-panel{
+    margin-top:28px;background:var(--char2);border:1px solid rgba(255,246,234,0.08);
+    border-radius:16px;padding:30px;display:none;
+  }
+  .item-panel.open{display:block;animation:reveal .35s ease;}
+  @keyframes reveal{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+  .item-panel h3{font-size:22px;color:var(--gold-light);margin-bottom:20px;}
+  .item-row{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:16px 0;border-bottom:1px solid rgba(255,246,234,0.07);
+  }
+  .item-row:last-child{border-bottom:none;}
+  .item-row .item-info{display:flex;align-items:center;gap:14px;}
+  .item-row .item-emoji{
+    width:50px;height:50px;border-radius:10px;background:rgba(246,168,33,0.1);
+    display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;
+  }
+  .item-row .item-name{font-weight:600;font-size:15.5px;}
+  .item-row .item-desc{font-size:12.5px;color:rgba(255,246,234,0.5);margin-top:2px;}
+  .order-now-btn{
+    background:var(--red);color:#fff;border:none;padding:10px 20px;border-radius:7px;
+    font-weight:700;font-size:13.5px;cursor:pointer;white-space:nowrap;
+    transition:background .2s, transform .15s;
+  }
+  .order-now-btn:hover{background:var(--red-dark);transform:translateY(-2px);}
+  .order-now-btn.added{background:var(--gold);color:var(--ink);}
+
+  /* FLOATING CART */
+  .cart-fab{
+    position:fixed;bottom:26px;right:26px;z-index:60;
+    background:var(--gold);color:var(--ink);border:none;
+    width:64px;height:64px;border-radius:50%;font-size:26px;cursor:pointer;
+    box-shadow:0 10px 26px rgba(0,0,0,0.4);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s;
+  }
+  .cart-fab:hover{transform:scale(1.06);}
+  .cart-count{
+    position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;
+    width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;font-family:'Poppins';
+  }
+
+  /* MODAL */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(10,7,5,0.75);z-index:70;
+    display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--char2);border-radius:16px;max-width:440px;width:100%;
+    padding:30px;max-height:85vh;overflow-y:auto;
+    border:1px solid rgba(255,246,234,0.1);
+  }
+  .modal h3{font-size:22px;color:var(--gold-light);margin-bottom:18px;}
+  .cart-empty{color:rgba(255,246,234,0.5);font-size:14px;padding:20px 0;text-align:center;}
+  .cart-line{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 0;border-bottom:1px solid rgba(255,246,234,0.07);font-size:14px;
+  }
+  .cart-line .qty-controls{display:flex;align-items:center;gap:8px;}
+  .cart-line .qty-controls button{
+    background:rgba(255,246,234,0.1);border:none;color:var(--cream);
+    width:24px;height:24px;border-radius:5px;cursor:pointer;font-size:14px;
+  }
+  .cart-line .remove-btn{color:var(--red);background:none;border:none;cursor:pointer;font-size:12px;margin-left:10px;}
+  .modal form{margin-top:18px;display:flex;flex-direction:column;gap:12px;}
+  .modal label{font-size:12.5px;color:rgba(255,246,234,0.6);font-weight:600;}
+  .modal input, .modal textarea{
+    background:var(--char);border:1px solid rgba(255,246,234,0.15);border-radius:8px;
+    padding:11px 12px;color:var(--cream);font-family:'Poppins';font-size:14px;
+  }
+  .modal textarea{resize:vertical;min-height:60px;}
+  .modal .submit-btn{
+    background:var(--red);color:#fff;border:none;padding:14px;border-radius:8px;
+    font-weight:700;font-size:15px;cursor:pointer;margin-top:6px;
+    transition:background .2s;
+  }
+  .modal .submit-btn:hover{background:var(--red-dark);}
+  .modal .close-btn{
+    position:absolute;top:18px;right:22px;background:none;border:none;
+    color:rgba(255,246,234,0.6);font-size:20px;cursor:pointer;
+  }
+  .modal{position:relative;}
+
+  @media (max-width:900px){
+    .cat-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+
+  
+  
+  
+  
+
+  .contact-section{
+    padding:100px 6%;position:relative;overflow:hidden;
+    background:radial-gradient(ellipse at 15% 20%, rgba(214,40,40,0.14), transparent 55%);
+  }
+  .contact-wrap{max-width:640px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:60px;}
+
+  .contact-info .eyebrow-line{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .contact-info .eyebrow-line .dash{width:34px;height:3px;background:var(--gold);border-radius:2px;}
+  .contact-info .eyebrow-line span{color:var(--gold-light);font-weight:600;font-size:14px;}
+  .contact-info h2{font-size:clamp(30px,4vw,44px);margin-bottom:16px;}
+  .contact-info > p{color:rgba(255,246,234,0.6);font-size:15.5px;line-height:1.7;margin-bottom:34px;max-width:400px;}
+
+  .info-item{display:flex;gap:16px;align-items:flex-start;margin-bottom:26px;}
+  .info-item .icon{
+    width:48px;height:48px;border-radius:12px;flex-shrink:0;
+    background:rgba(246,168,33,0.1);border:1.5px solid rgba(246,168,33,0.3);
+    display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--gold-light);
+  }
+  .info-item h4{font-size:13px;text-transform:none;color:rgba(255,246,234,0.5);font-weight:600;margin-bottom:4px;}
+  .info-item a, .info-item p{color:var(--cream);text-decoration:none;font-size:15.5px;font-weight:600;line-height:1.5;}
+  .info-item a:hover{color:var(--gold-light);}
+
+  .contact-form{
+    background:var(--char2);border:1px solid rgba(255,246,234,0.08);
+    border-radius:18px;padding:36px;
+  }
+  .contact-form h3{font-size:20px;color:var(--gold-light);margin-bottom:22px;}
+  .contact-form label{font-size:12.5px;color:rgba(255,246,234,0.6);font-weight:600;display:block;margin-bottom:6px;}
+  .contact-form .field{margin-bottom:18px;}
+  .contact-form input, .contact-form textarea{
+    width:100%;background:var(--char);border:1px solid rgba(255,246,234,0.15);border-radius:8px;
+    padding:12px 14px;color:var(--cream);font-family:'Poppins';font-size:14px;
+  }
+  .contact-form textarea{resize:vertical;min-height:90px;}
+  .contact-form .submit-btn{
+    width:100%;background:var(--red);color:#fff;border:none;padding:15px;border-radius:8px;
+    font-weight:700;font-size:15px;cursor:pointer;transition:background .2s, transform .15s;
+    margin-top:6px;
+  }
+  .contact-form .submit-btn:hover{background:var(--red-dark);transform:translateY(-2px);}
+
+  .map-embed{
+    margin-top:14px;border-radius:10px;overflow:hidden;height:150px;
+    border:1px solid rgba(255,246,234,0.1);
+  }
+  .map-embed iframe{width:100%;height:100%;border:0;filter:grayscale(0.3) invert(0.92) contrast(0.9);}
+
+  @media (max-width:860px){
+    .contact-wrap{grid-template-columns:1fr;}
+  }
+
+
+  
+  
+  
+  
+
+  .about-section{
+    padding:100px 6%;position:relative;overflow:hidden;
+  }
+  .about-wrap{
+    max-width:1180px;margin:0 auto;
+    display:grid;grid-template-columns:0.95fr 1.05fr;gap:60px;align-items:center;
+  }
+
+  .about-visual{position:relative;}
+  .about-visual .frame{
+    position:relative;border-radius:18px;overflow:hidden;
+    box-shadow:0 24px 50px rgba(0,0,0,0.45);
+    transform:rotate(-1.2deg);
+  }
+  .about-visual .frame img{width:100%;display:block;}
+  .about-visual .frame.logo-frame{
+    background:#0d0906;
+    display:flex;align-items:center;justify-content:center;
+    padding:50px;aspect-ratio:1/1;
+  }
+  .about-visual .frame.logo-frame img{width:78%;height:auto;}
+  .about-visual .stat-card{
+    position:absolute;bottom:-22px;right:-22px;
+    background:var(--red);color:#fff;padding:20px 24px;border-radius:14px;
+    box-shadow:0 16px 30px rgba(0,0,0,0.4);
+    text-align:center;transform:rotate(2deg);
+  }
+  .about-visual .stat-card .num{font-family:'Anton',sans-serif;font-size:32px;line-height:1;}
+  .about-visual .stat-card .label{font-size:11.5px;font-weight:600;margin-top:4px;opacity:0.9;}
+
+  .about-copy .eyebrow-line{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .about-copy .eyebrow-line .dash{width:34px;height:3px;background:var(--gold);border-radius:2px;}
+  .about-copy .eyebrow-line span{color:var(--gold-light);font-weight:600;font-size:14px;}
+  .about-copy h2{font-size:clamp(30px,4vw,44px);margin-bottom:20px;}
+  .about-copy p{color:rgba(255,246,234,0.65);font-size:15.5px;line-height:1.8;margin-bottom:18px;max-width:520px;}
+
+  .about-points{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px;}
+  .point{display:flex;gap:12px;align-items:flex-start;}
+  .point .tick{
+    width:26px;height:26px;border-radius:50%;background:rgba(246,168,33,0.12);
+    border:1.5px solid rgba(246,168,33,0.4);color:var(--gold-light);
+    display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px;
+  }
+  .point p{margin:0;font-size:14px;color:var(--cream);font-weight:500;line-height:1.5;}
+
+  @media (max-width:860px){
+    .about-wrap{grid-template-columns:1fr;}
+    .about-points{grid-template-columns:1fr;}
+    .about-visual .stat-card{right:14px;}
+  }
+
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand">
+    <img src="assets/logo.png" alt="Fast Food logo">
+    <span>Fast Food</span>
+  </div>
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="order-btn" href="https://wa.me/923452933293" target="_blank">Order on WhatsApp</a>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow-line"><span class="dash"></span><span>Fresh Ingredients · Premium Quality</span></div>
+      <h1>Bigger Bites,<span class="accent">Happy Mood.</span></h1>
+      <p>Zinger burgers, wood-fired pizza, crispy fried chicken and hot rolls — made fresh, delivered fast to your door in Karachi.</p>
+      <div class="hero-cta">
+        <a class="btn-primary" href="https://wa.me/923452933293" target="_blank">Order Now on WhatsApp</a>
+        <a class="btn-secondary" href="#menu">View Full Menu</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="plate" id="heroCarousel">
+        <img src="assets/banner-burgers.png" class="active" alt="Fresh & tasty burgers, made with love">
+        <img src="assets/banner-pizza.png" alt="Hot & fresh pizza">
+        <img src="assets/banner-friedchicken.png" alt="Hot & crispy fried chicken">
+        <img src="assets/banner-rolls.png" alt="Hot & fresh rolls">
+        <img src="assets/banner-deals.png" alt="Latest deals, up to 50% off">
+        <div class="dots">
+          <span class="active"></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="badge">50%<b>OFF</b>DEALS</div>
+    </div>
+  </div>
+</section>
+
+<div class="highlights">
+  <div class="highlight-item">
+    <div class="icon">🌿</div>
+    <h3>Fresh Ingredients</h3>
+    <p>Nothing frozen, nothing stale</p>
+  </div>
+  <div class="highlight-item">
+    <div class="icon">👨‍🍳</div>
+    <h3>Premium Quality</h3>
+    <p>Made to order, every time</p>
+  </div>
+  <div class="highlight-item">
+    <div class="icon">😋</div>
+    <h3>Great Taste</h3>
+    <p>Recipes worth coming back for</p>
+  </div>
+  <div class="highlight-item">
+    <div class="icon">🙂</div>
+    <h3>Happy Customers</h3>
+    <p>Loved across Karachi</p>
+  </div>
+</div>
+
+<section class="menu-section" id="menu">
+  <div class="menu-head">
+    <div class="eyebrow-line"><span class="dash"></span><span>Our Menu</span></div>
+    <h2>Pick your craving</h2>
+    <p>Tap a category to see what's inside, then order straight to WhatsApp.</p>
+  </div>
+
+  <div class="cat-grid" id="catGrid">
+    <div class="cat-card" data-cat="burgers"><img class="cat-img" src="assets/cat-burgers.png" alt="Burgers"><h4>Burgers</h4></div>
+    <div class="cat-card" data-cat="pizza"><img class="cat-img" src="assets/cat-pizza.png" alt="Pizza"><h4>Pizza</h4></div>
+    <div class="cat-card" data-cat="fried"><img class="cat-img" src="assets/cat-fried.png" alt="Fried & Chicken"><h4>Fried & Chicken</h4></div>
+    <div class="cat-card" data-cat="roll"><img class="cat-img" src="assets/cat-roll.png" alt="Roll"><h4>Roll</h4></div>
+    <div class="cat-card" data-cat="deals"><img class="cat-img" src="assets/cat-deals.png" alt="Deals"><h4>Deals</h4></div>
+  </div>
+
+  <div class="item-panel" id="itemPanel">
+    <h3 id="panelTitle">Burgers</h3>
+    <div id="panelItems"></div>
+  </div>
+</section>
+
+<button class="cart-fab" id="cartFab">🛒<span class="cart-count" id="cartCount">0</span></button>
+
+<div class="modal-overlay" id="cartOverlay">
+  <div class="modal">
+    <button class="close-btn" id="closeCart">✕</button>
+    <h3>Your Order</h3>
+    <div id="cartLines"><div class="cart-empty">Your cart is empty. Add some items first!</div></div>
+    <form id="checkoutForm" style="display:none;">
+      <label>Your Name</label>
+      <input type="text" id="custName" required placeholder="e.g. Ahmed Khan">
+      <label>Contact Number</label>
+      <input type="tel" id="custPhone" required placeholder="03xx-xxxxxxx">
+      <label>Delivery Address</label>
+      <textarea id="custAddress" required placeholder="House #, street, area, Karachi"></textarea>
+      <button type="submit" class="submit-btn">Send Order on WhatsApp</button>
+    </form>
+  </div>
+</div>
+
+<section class="about-section" id="about">
+  <div class="about-wrap">
+    <div class="about-visual">
+      <div class="frame logo-frame">
+        <img src="assets/logo.png" alt="Fast Food logo">
+      </div>
+      <div class="stat-card">
+        <div class="num">100%</div>
+        <div class="label">Fresh Daily</div>
+      </div>
+    </div>
+
+    <div class="about-copy">
+      <div class="eyebrow-line"><span class="dash"></span><span>About Us</span></div>
+      <h2>Made fresh. Delivered fast. Every single time.</h2>
+      <p>Fast Food started with one simple idea — delicious food shouldn't take forever, and it shouldn't cut corners either. From juicy burgers to hot rolls and cheesy pizza, every order is prepared fresh in our Layari kitchen and sent straight to your door.</p>
+      <p>No shortcuts, no reheated leftovers — just real ingredients, made-to-order, with a mission to put a smile on your face with every bite.</p>
+
+      <div class="about-points">
+        <div class="point"><span class="tick">✓</span><p>Fresh ingredients, prepped daily</p></div>
+        <div class="point"><span class="tick">✓</span><p>Made-to-order, never pre-cooked</p></div>
+        <div class="point"><span class="tick">✓</span><p>Fast delivery across Karachi</p></div>
+        <div class="point"><span class="tick">✓</span><p>Order directly on WhatsApp</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <div class="contact-wrap">
+    <div class="contact-info">
+      <div class="eyebrow-line"><span class="dash"></span><span>Get In Touch</span></div>
+      <h2>Let's get you fed.</h2>
+      <p>Have a question about an order, a delivery, or just want to say hi? Reach out — we usually reply within minutes on WhatsApp.</p>
+
+      <div class="info-item">
+        <div class="icon">📧</div>
+        <div>
+          <h4>Email</h4>
+          <a href="mailto:abdulhannanali490@gmail.com">abdulhannanali490@gmail.com</a>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="icon">📞</div>
+        <div>
+          <h4>Phone / WhatsApp</h4>
+          <a href="https://wa.me/923452933293" target="_blank">+92 345 2933293</a>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="icon">📍</div>
+        <div>
+          <h4>Address</h4>
+          <p>New Kumhar Wara, Street #4, Gabol Park, Layari, Karachi</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 Fast Food · Delicious Food, Happy Mood
+</footer>
+
+<script>
+  (function(){
+    const carousel = document.getElementById('heroCarousel');
+    const imgs = carousel.querySelectorAll('img');
+    const dots = carousel.querySelectorAll('.dots span');
+    let i = 0;
+    setInterval(function(){
+      imgs[i].classList.remove('active');
+      dots[i].classList.remove('active');
+      i = (i + 1) % imgs.length;
+      imgs[i].classList.add('active');
+      dots[i].classList.add('active');
+    }, 3200);
+  })();
+</script>
+<script>
+
+  const MENU = {
+    burgers: {
+      title: "Burgers", emoji: "🍔",
+      items: [
+        {name:"Zinger Burger", desc:"Crispy fried chicken fillet"},
+        {name:"Chicken Cheese Burger", desc:"Grilled chicken with melted cheese"},
+        {name:"Cheese Burger", desc:"Classic beef patty with cheese"},
+        {name:"Double Patty Burger", desc:"Two juicy beef patties"},
+        {name:"BBQ Chicken Burger", desc:"Smoky BBQ glazed chicken"},
+      ]
+    },
+    pizza: {
+      title: "Pizza", emoji: "🍕",
+      items: [
+        {name:"Chicken Tikka Pizza", desc:"Spiced tikka chicken topping"},
+        {name:"Chicken Cheese Pizza", desc:"Loaded chicken and cheese"},
+        {name:"Small Pizza", desc:"Personal size, 8 inch"},
+        {name:"Large Pizza", desc:"Family size, 12 inch"},
+        {name:"Jumbo Pizza", desc:"Extra large, 16 inch"},
+      ]
+    },
+    fried: {
+      title: "Fried & Chicken", emoji: "🍗",
+      items: [
+        {name:"Chicken Wings", desc:"Crispy golden wings"},
+        {name:"Chicken Nuggets", desc:"Bite-size, kids' favorite"},
+        {name:"Chicken Strips", desc:"Tender breaded strips"},
+        {name:"Hot Chopy Chicken", desc:"Extra spicy fried chicken"},
+      ]
+    },
+    roll: {
+      title: "Roll", emoji: "🌯",
+      items: [
+        {name:"Chicken Roll", desc:"Classic grilled chicken wrap"},
+        {name:"BBQ Roll", desc:"Smoky BBQ chicken wrap"},
+        {name:"Zinger Roll", desc:"Crispy fried chicken wrap"},
+        {name:"Chicken Cheese Roll", desc:"Loaded with melted cheese"},
+        {name:"Shawarma Roll", desc:"Traditional shawarma style"},
+      ]
+    },
+    deals: {
+      title: "Deals", emoji: "🔥",
+      items: [
+        {name:"Deal 1", desc:"3 Zinger Burgers + 1 liter Coldrink"},
+        {name:"Deal 2", desc:"2 Zinger Burgers + 1 Chicken Roll + 1 liter Coldrink"},
+      ]
+    }
+  };
+
+  const catCards = document.querySelectorAll('.cat-card');
+  const itemPanel = document.getElementById('itemPanel');
+  const panelTitle = document.getElementById('panelTitle');
+  const panelItems = document.getElementById('panelItems');
+
+  let cart = []; // {name, qty}
+
+  catCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const catKey = card.dataset.cat;
+      const alreadyActive = card.classList.contains('active');
+      catCards.forEach(c => c.classList.remove('active'));
+
+      if (alreadyActive) {
+        itemPanel.classList.remove('open');
+        return;
+      }
+      card.classList.add('active');
+      renderItems(catKey);
+      itemPanel.classList.add('open');
+    });
+  });
+
+  function renderItems(catKey){
+    const cat = MENU[catKey];
+    panelTitle.textContent = cat.emoji + "  " + cat.title;
+    panelItems.innerHTML = '';
+    cat.items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <div class="item-info">
+          <div class="item-emoji">${cat.emoji}</div>
+          <div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.desc}</div>
+          </div>
+        </div>
+        <button class="order-now-btn">Order Now</button>
+      `;
+      const btn = row.querySelector('.order-now-btn');
+      btn.addEventListener('click', () => {
+        addToCart(item.name);
+        btn.textContent = 'Added ✓';
+        btn.classList.add('added');
+        setTimeout(() => { btn.textContent = 'Order Now'; btn.classList.remove('added'); }, 1200);
+      });
+      panelItems.appendChild(row);
+    });
+  }
+
+  function addToCart(name){
+    const existing = cart.find(c => c.name === name);
+    if (existing) existing.qty += 1;
+    else cart.push({name, qty:1});
+    updateCartCount();
+  }
+
+  function updateCartCount(){
+    const total = cart.reduce((sum, c) => sum + c.qty, 0);
+    document.getElementById('cartCount').textContent = total;
+  }
+
+  // CART MODAL
+  const cartOverlay = document.getElementById('cartOverlay');
+  document.getElementById('cartFab').addEventListener('click', () => {
+    renderCart();
+    cartOverlay.classList.add('open');
+  });
+  document.getElementById('closeCart').addEventListener('click', () => cartOverlay.classList.remove('open'));
+  cartOverlay.addEventListener('click', (e) => { if (e.target === cartOverlay) cartOverlay.classList.remove('open'); });
+
+  function renderCart(){
+    const cartLines = document.getElementById('cartLines');
+    const form = document.getElementById('checkoutForm');
+    if (cart.length === 0){
+      cartLines.innerHTML = '<div class="cart-empty">Your cart is empty. Add some items first!</div>';
+      form.style.display = 'none';
+      return;
+    }
+    form.style.display = 'flex';
+    cartLines.innerHTML = '';
+    cart.forEach((c, idx) => {
+      const line = document.createElement('div');
+      line.className = 'cart-line';
+      line.innerHTML = `
+        <span>${c.name}</span>
+        <div class="qty-controls">
+          <button type="button" data-act="dec" data-idx="${idx}">−</button>
+          <span>${c.qty}</span>
+          <button type="button" data-act="inc" data-idx="${idx}">+</button>
+          <button type="button" class="remove-btn" data-act="rm" data-idx="${idx}">Remove</button>
+        </div>
+      `;
+      cartLines.appendChild(line);
+    });
+    cartLines.querySelectorAll('button[data-act]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.idx);
+        const act = btn.dataset.act;
+        if (act === 'inc') cart[idx].qty += 1;
+        if (act === 'dec') { cart[idx].qty -= 1; if (cart[idx].qty <= 0) cart.splice(idx,1); }
+        if (act === 'rm') cart.splice(idx,1);
+        updateCartCount();
+        renderCart();
+      });
+    });
+  }
+
+  document.getElementById('checkoutForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('custName').value.trim();
+    const phone = document.getElementById('custPhone').value.trim();
+    const address = document.getElementById('custAddress').value.trim();
+
+    let msg = `Hello Fast Food! I'd like to place an order:%0A%0A`;
+    cart.forEach(c => { msg += `• ${c.name} x${c.qty}%0A`; });
+    msg += `%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}`;
+
+    window.open(`https://wa.me/923452933293?text=${msg}`, '_blank');
+  });
+
+</script>
+<script>
+
+</script>
+</body>
+</html>
